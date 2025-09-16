@@ -1,5 +1,9 @@
-# Dependencies
+# Node.js dependencies
 node_modules/
+
+# Build output
+dist/
+build/
 
 # Logs
 npm-debug.log*
@@ -7,3 +11,16 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db

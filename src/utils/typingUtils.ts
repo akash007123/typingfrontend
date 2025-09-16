@@ -403,3 +403,20 @@ export function getHighlightClasses(type: TextDiff['type']): string {
   };
   return classes[type];
 }
+
+
+export function formatDateTime(date: Date): string {
+  const formattedDate = date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
+  const formattedTime = date.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  return `${formattedDate} ${formattedTime}`;
+}

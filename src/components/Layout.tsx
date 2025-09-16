@@ -29,7 +29,7 @@ export function Layout({ children }: LayoutProps) {
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2">
               <BarChart3 className="h-8 w-8 text-blue-600" />
-              <span className="font-bold text-xl text-gray-900 dark:text-white">TypeTest</span>
+              <span className="font-bold text-xl text-gray-900 dark:text-white">Vivek Typing Test</span>
             </Link>
 
             {/* Navigation Links */}
@@ -140,10 +140,10 @@ export function Layout({ children }: LayoutProps) {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
               <BarChart3 className="h-6 w-6 text-blue-600" />
-              <span className="font-semibold text-gray-900 dark:text-white">TypeTest</span>
+              <span className="font-semibold text-gray-900 dark:text-white">Vivek Typing Test</span>
             </div>
             <div className="text-sm text-gray-600 dark:text-gray-400">
-              © 2025 TypeTest. Built with React & TypeScript.
+              © 2025 Developed by <span className='text-blue-600 dark:text-blue-400'><a href="https://akash.sosapient.in/">Akash</a></span>
             </div>
           </div>
         </div>

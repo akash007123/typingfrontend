@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosInstance } from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -234,6 +234,17 @@ class ApiClient {
 
   async getUserRank(userId: string) {
     const response = await this.client.get(`/leaderboard/user-rank/${userId}`);
+    return response.data;
+  }
+
+  // Admin endpoints
+  async getAllUsers() {
+    const response = await this.client.get('/users/all');
+    return response.data;
+  }
+
+  async deleteUser(userId: string) {
+    const response = await this.client.delete(`/users/${userId}`);
     return response.data;
   }
 

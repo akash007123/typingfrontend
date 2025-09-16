@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Users, BarChart3, Trash2, Shield, TrendingUp, Calendar, Target } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { authService } from '../services/authService';
@@ -7,8 +7,22 @@ import { User } from '../types';
 
 export function Admin() {
   const { user, isAuthenticated } = useAuth();
-  const [users, setUsers] = useState<User[]>(authService.getAllUsers());
+  const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<string>('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      setLoading(true);
+      const fetchedUsers = await authService.getAllUsers();
+      setUsers(fetchedUsers);
+      setLoading(false);
+    };
+
+    if (isAuthenticated && user?.isAdmin) {
+      fetchUsers();
+    }
+  }, [isAuthenticated, user?.isAdmin]);
 
   const platformStats = useMemo(() => {
     return testService.getAllTestsStats();
@@ -33,11 +47,12 @@ export function Admin() {
     );
   }
 
-  const handleDeleteUser = (userId: string) => {
+  const handleDeleteUser = async (userId: string) => {
     if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
-      const success = authService.deleteUser(userId);
+      const success = await authService.deleteUser(userId);
       if (success) {
-        setUsers(authService.getAllUsers());
+        const updatedUsers = await authService.getAllUsers();
+        setUsers(updatedUsers);
         setSelectedUser('');
       }
     }
@@ -112,7 +127,12 @@ export function Admin() {
             </div>
             
             <div className="p-6">
-              {users.length === 0 ? (
+              {loading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                  <p className="text-gray-600">Loading users...</p>
+                </div>
+              ) : users.length === 0 ? (
                 <div className="text-center py-8">
                   <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-600">No users registered yet</p>

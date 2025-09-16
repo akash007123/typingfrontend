@@ -209,7 +209,7 @@ export function HomePage() {
                 <h4 className="font-medium text-blue-900 dark:text-blue-200 mb-2">Supported Formats:</h4>
                 <ul className="text-sm text-blue-800 dark:text-blue-300 space-y-1">
                   <li>• Plain text files (.txt)</li>
-                  <li>• PDF files (.pdf)</li>
+                  <li>• No PDF support</li>
                   <li>• Maximum file size: 1MB</li>
                 </ul>
               </div>

@@ -188,13 +188,13 @@ export function Auth({ mode }: AuthProps) {
             )}
 
             {/* Demo Credentials for Login */}
-            {mode === 'login' && (
+            {/* {mode === 'login' && (
               <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                 <p className="text-blue-800 dark:text-blue-200 text-sm font-medium mb-1">Demo Accounts:</p>
                 <p className="text-blue-700 dark:text-blue-300 text-xs">Admin: admin@typingtest.com / admin123</p>
                 <p className="text-blue-700 dark:text-blue-300 text-xs">Or create your own account!</p>
               </div>
-            )}
+            )} */}
 
             {/* Submit Button */}
             <button

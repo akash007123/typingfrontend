@@ -178,6 +178,32 @@ export class AuthService {
       return null;
     }
   }
+
+  async getAllUsers(): Promise<User[]> {
+    try {
+      const response = await apiClient.getAllUsers();
+      return response.users.map((user: any) => ({
+        id: user._id || user.id,
+        email: user.email,
+        username: user.username,
+        createdAt: new Date(user.createdAt),
+        isAdmin: user.role === 'admin'
+      }));
+    } catch (error) {
+      console.error('Failed to fetch users:', error);
+      return [];
+    }
+  }
+
+  async deleteUser(userId: string): Promise<boolean> {
+    try {
+      await apiClient.deleteUser(userId);
+      return true;
+    } catch (error) {
+      console.error('Failed to delete user:', error);
+      return false;
+    }
+  }
 }
 
 export const authService = AuthService.getInstance();
