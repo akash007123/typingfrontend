@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, User, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Camera, X } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { LoadingSpinner } from './LoadingSpinner';
 
@@ -15,6 +15,8 @@ export function Auth({ mode }: AuthProps) {
     password: '',
     confirmPassword: ''
   });
+  const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
@@ -29,23 +31,12 @@ export function Auth({ mode }: AuthProps) {
     e.preventDefault();
     setError('');
 
-    if (mode === 'signup') {
-      if (formData.password !== formData.confirmPassword) {
-        setError('Passwords do not match');
-        return;
-      }
-      if (formData.password.length < 6) {
-        setError('Password must be at least 6 characters long');
-        return;
-      }
-    }
-
     try {
       let result;
       if (mode === 'login') {
         result = await login(formData.email, formData.password);
       } else {
-        result = await signup(formData.email, formData.username, formData.password);
+        result = await signup(formData.email, formData.username, formData.password, profilePicture);
       }
 
       if (result.success) {
@@ -63,6 +54,45 @@ export function Auth({ mode }: AuthProps) {
       ...formData,
       [e.target.name]: e.target.value
     });
+  };
+
+  const handleProfilePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        setError('Please select a valid image file (JPEG, PNG, GIF, or WebP)');
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+      if (file.size > maxSize) {
+        setError('Profile picture must be less than 5MB');
+        return;
+      }
+
+      setProfilePicture(file);
+      
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setProfilePicturePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+      setError(''); // Clear any previous errors
+    }
+  };
+
+  const removeProfilePicture = () => {
+    setProfilePicture(null);
+    setProfilePicturePreview(null);
+    // Reset the file input
+    const fileInput = document.getElementById('profilePicture') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   };
 
   return (
@@ -91,8 +121,7 @@ export function Auth({ mode }: AuthProps) {
                 <input
                   id="email"
                   name="email"
-                  type="email"
-                  required
+                  type="text"
                   value={formData.email}
                   onChange={handleInputChange}
                   className="w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -113,13 +142,68 @@ export function Auth({ mode }: AuthProps) {
                     id="username"
                     name="username"
                     type="text"
-                    required
                     value={formData.username}
                     onChange={handleInputChange}
                     className="w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     placeholder="Choose a username"
                   />
                   <User className="h-5 w-5 text-gray-400 absolute left-3 top-3.5" />
+                </div>
+              </div>
+            )}
+
+            {/* Profile Picture Field (Signup only) */}
+            {mode === 'signup' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Profile Picture (Optional)
+                </label>
+                <div className="flex items-center space-x-4">
+                  {/* Profile Picture Preview */}
+                  <div className="relative">
+                    {profilePicturePreview ? (
+                      <div className="relative">
+                        <img
+                          src={profilePicturePreview}
+                          alt="Profile preview"
+                          className="w-20 h-20 rounded-full object-cover border-2 border-gray-300 dark:border-gray-600"
+                        />
+                        <button
+                          type="button"
+                          onClick={removeProfilePicture}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center">
+                        <Camera className="h-8 w-8 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Upload Button */}
+                  <div className="flex-1">
+                    <input
+                      id="profilePicture"
+                      name="profilePicture"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleProfilePictureChange}
+                      className="hidden"
+                    />
+                    <label
+                      htmlFor="profilePicture"
+                      className="cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                    >
+                      <Camera className="h-4 w-4 mr-2" />
+                      {profilePicture ? 'Change Picture' : 'Upload Picture'}
+                    </label>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                      JPEG, PNG, GIF or WebP. Max 5MB.
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
@@ -134,7 +218,6 @@ export function Auth({ mode }: AuthProps) {
                   id="password"
                   name="password"
                   type={showPassword ? 'text' : 'password'}
-                  required
                   value={formData.password}
                   onChange={handleInputChange}
                   className="w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -162,7 +245,6 @@ export function Auth({ mode }: AuthProps) {
                     id="confirmPassword"
                     name="confirmPassword"
                     type={showConfirmPassword ? 'text' : 'password'}
-                    required
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                     className="w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"

@@ -94,8 +94,29 @@ export function Layout({ children }: LayoutProps) {
               {isAuthenticated ? (
                 <div className="flex items-center space-x-3">
                   <div className="flex items-center space-x-2 text-sm">
-                    <User className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                    {user?.profile?.avatar ? (
+                      <img 
+                        src={`http://localhost:5000${user.profile.avatar}`}
+                        alt={`${user.username}'s profile`}
+                        className="h-8 w-8 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
+                        onError={(e) => {
+                          console.log('Profile image failed to load:', `http://localhost:5000${user?.profile?.avatar}`);
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                        }}
+                      />
+                    ) : (
+                      <div className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
+                        <User className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                      </div>
+                    )}
                     <span className="text-gray-700 dark:text-gray-300 font-medium">{user?.username}</span>
+                    {/* Debug info - remove in production */}
+                    {import.meta.env.DEV && (
+                      <span className="text-xs text-gray-400">
+                        {user?.profile?.avatar ? '🖼️' : '👤'}
+                      </span>
+                    )}
                     {user?.isAdmin && (
                       <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs px-2 py-1 rounded-full">Admin</span>
                     )}

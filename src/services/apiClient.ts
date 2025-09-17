@@ -69,15 +69,34 @@ class ApiClient {
     return response.data;
   }
 
-  async register(username: string, email: string, password: string, firstName?: string, lastName?: string) {
-    const response = await this.client.post('/auth/register', {
-      username,
-      email,
-      password,
-      firstName,
-      lastName,
-    });
-    return response.data;
+  async register(username: string, email: string, password: string, firstName?: string, lastName?: string, profilePicture?: File | null) {
+    if (profilePicture) {
+      // Use FormData for file upload
+      const formData = new FormData();
+      formData.append('username', username);
+      formData.append('email', email);
+      formData.append('password', password);
+      if (firstName) formData.append('firstName', firstName);
+      if (lastName) formData.append('lastName', lastName);
+      formData.append('profilePicture', profilePicture);
+
+      const response = await this.client.post('/auth/register', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } else {
+      // Regular JSON request without file
+      const response = await this.client.post('/auth/register', {
+        username,
+        email,
+        password,
+        firstName,
+        lastName,
+      });
+      return response.data;
+    }
   }
 
   async getCurrentUser() {

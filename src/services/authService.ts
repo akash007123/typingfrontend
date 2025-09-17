@@ -98,12 +98,12 @@ export class AuthService {
     }
   }
 
-  async signup(email: string, username: string, password: string): Promise<{ success: boolean; message: string; user?: User }> {
+  async signup(email: string, username: string, password: string, profilePicture?: File | null): Promise<{ success: boolean; message: string; user?: User }> {
     this.authState.loading = true;
     this.notifyListeners();
 
     try {
-      const response = await apiClient.register(username, email, password);
+      const response = await apiClient.register(username, email, password, undefined, undefined, profilePicture);
       
       // Store tokens
       localStorage.setItem('auth_token', response.token);

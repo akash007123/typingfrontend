@@ -4,6 +4,11 @@ export interface User {
   username: string;
   createdAt: Date;
   isAdmin?: boolean;
+  profile?: {
+    firstName?: string;
+    lastName?: string;
+    avatar?: string;
+  };
 }
 
 export interface TypingTest {
